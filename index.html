@@ -1,0 +1,216 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RizztzyTools🩸🐉🕊</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://files.catbox.moe/vs9vz9.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+    .panel {
+      width: 90%;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    select, input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .hidden { display: none; }
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8) url('https://upload.wikimedia.org/wikipedia/commons/4/4c/White_bird.svg') no-repeat center center;
+      background-size: 100px;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading"></div>
+
+  <div class="panel" id="mainPanel">
+    <h2>RizztzyTools🩸🐉🕊</h2>
+    <select id="toolSelect" onchange="changeTool()">
+      <option selected disabled>Select Tool</option>
+      <option value="subfinder">Subdomain Finder</option>
+      <option value="trackip">Track IP</option>
+      <option value="telegram">Telegram Bot Sender</option>
+      <option value="attack">Attack Launcher</option>
+    </select>
+  </div>
+
+  <!-- Subdomain Finder -->
+  <div class="panel hidden" id="subfinderPanel">
+    <h3>Subdomain Finder</h3>
+    <input type="text" id="subdomainInput" placeholder="Enter Domain">
+    <button onclick="startSubdomainFinding()">Start Finding</button>
+    <textarea id="subdomainOutput" placeholder="Subdomains will appear here..." rows="5" readonly></textarea>
+    <button onclick="back()">Back</button>
+  </div>
+
+  <!-- Track IP -->
+  <div class="panel hidden" id="trackipPanel">
+    <h3>Track IP</h3>
+    <input type="text" id="ipInput" placeholder="Enter IP Address">
+    <button onclick="trackIP()">Track</button>
+    <div id="ipInfo"></div>
+    <button onclick="back()">Back</button>
+  </div>
+
+  <!-- Attack Launcher -->
+  <div class="panel hidden" id="attackPanel">
+    <h3>Attack Launcher</h3>
+    <input type="text" id="attackUrl" placeholder="Target URL">
+    <input type="number" id="attackTime" placeholder="Duration (seconds)">
+    
+    <div id="methodButtons">
+      <button onclick="setMethod('flood')">Flood</button>
+      <button onclick="setMethod('floodapi')">Flood API</button>
+      <button onclick="setMethod('floodvip')">Flood VIP</button>
+      <button onclick="setMethod('floodv2')">Flood V2</button>
+      <button onclick="setMethod('tls')">TLS</button>
+      <button onclick="setMethod('strike')">Strike</button>
+      <button onclick="setMethod('hold')">Hold</button>
+      <button onclick="setMethod('kill')">Kill</button>
+      <button onclick="setMethod('h2-bypass')">H2 Bypass</button>
+      <button onclick="setMethod('storm')">Storm</button>
+      <button onclick="setMethod('h2-flood')">H2 Flood</button>
+      <button onclick="setMethod('destroy')">Destroy</button>
+      <button onclick="setMethod('bypass')">Bypass</button>
+      <button onclick="setMethod('raw')">Raw</button>
+      <button onclick="setMethod('thunder')">Thunder</button>
+      <button onclick="setMethod('ninja')">Ninja</button>
+      <button onclick="setMethod('glory')">Glory</button>
+    </div>
+
+    <p id="selectedMethod">Selected Method: None</p>
+    <button onclick="launchAttack()">Launch</button>
+    <button onclick="back()">Back</button>
+  </div>
+
+  <script>
+    function changeTool() {
+      const value = document.getElementById('toolSelect').value;
+      document.getElementById('mainPanel').classList.add('hidden');
+      document.getElementById('subfinderPanel').classList.toggle('hidden', value !== 'subfinder');
+      document.getElementById('trackipPanel').classList.toggle('hidden', value !== 'trackip');
+      document.getElementById('attackPanel').classList.toggle('hidden', value !== 'attack');
+    }
+
+    function back() {
+      document.getElementById('mainPanel').classList.remove('hidden');
+      document.getElementById('subfinderPanel').classList.add('hidden');
+      document.getElementById('trackipPanel').classList.add('hidden');
+      document.getElementById('attackPanel').classList.add('hidden');
+    }
+
+    // Show loading
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    // Subdomain Finder
+    function startSubdomainFinding() {
+      const domain = document.getElementById('subdomainInput').value;
+      if (!domain) return alert("Domain is required");
+
+      showLoading();
+      fetch(`/subfinder?domain=${domain}`)
+        .then(res => res.json())
+        .then(data => {
+          hideLoading();
+          document.getElementById('subdomainOutput').value = data.subdomains.join("\n");
+        })
+        .catch(() => {
+          hideLoading();
+          alert("Error finding subdomains");
+        });
+    }
+
+    // Track IP
+    function trackIP() {
+      const ip = document.getElementById('ipInput').value;
+      if (!ip) return alert("IP is required");
+
+      showLoading();
+      fetch(`/trackip?ip=${ip}`)
+        .then(res => res.json())
+        .then(data => {
+          hideLoading();
+          document.getElementById('ipInfo').innerHTML = `
+            <strong>Location:</strong> ${data.location}<br>
+            <strong>ISP:</strong> ${data.isp}<br>
+            <strong>Organisation:</strong> ${data.org}<br>
+          `;
+        })
+        .catch(() => {
+          hideLoading();
+          alert("Error tracking IP");
+        });
+    }
+
+    // Set Method for Attack
+    let selectedMethod = '';
+    function setMethod(method) {
+      selectedMethod = method;
+      document.getElementById('selectedMethod').innerText = `Selected Method: ${method}`;
+    }
+
+    // Launch Attack
+    function launchAttack() {
+      const url = document.getElementById('attackUrl').value;
+      const time = document.getElementById('attackTime').value;
+
+      if (!url || !time || !selectedMethod) return alert("All fields are required");
+
+      showLoading();
+      fetch("/attack", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, time, method: selectedMethod })
+      })
+      .then(res => res.json())
+      .then(data => {
+        hideLoading();
+        alert(data.message || "Attack sent!");
+      })
+      .catch(() => {
+        hideLoading();
+        alert("Error executing attack");
+      });
+    }
+  </script>
+</body>
+</html>
